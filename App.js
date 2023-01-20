@@ -5,18 +5,36 @@ import React from 'react';
 import * as Location from "expo-location"
 
 export default function App() {
-  const[locPermission, setLocPermission] = React.useState(false)
+  const[location, setLocation] = React.useState({
+    permission: false,
+    region: {
+      longitude: 0,
+      latitude: 0,
+      latitudeDelta: 0.02,
+      longitudeDelta: 0.02,
+    }
+  })
 
   async function getPermission(){
     const foregroundPermission = await Location.requestForegroundPermissionsAsync()
-    return foregroundPermission.granted
+    const userLocation = await Location.getCurrentPositionAsync({})
+    const loc = JSON.parse(JSON.stringify(userLocation))
+    return [loc.coords.longitude, loc.coords.latitude, foregroundPermission.granted]
   }
 
 React.useEffect(
   ()=>{
     async function start(){
-      const Permission = await getPermission()
-      setLocPermission(Permission)
+      const locationAry = await getPermission()
+      setLocation({
+        permission: locationAry[2],
+        region:{
+          longitude: locationAry[0],
+          latitude: locationAry[1],
+          latitudeDelta: 0.06,
+          longitudeDelta: 0.06,
+        }
+      })
     }
     start()
   },
@@ -27,7 +45,8 @@ React.useEffect(
       <MapView 
         style={styles.map} 
         mapType='standard' 
-        showsUserLocation={locPermission}
+        showsUserLocation={location.permission}
+        region = {location.region}
         />
       <StatusBar style="auto" />
     </View>
