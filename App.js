@@ -5,7 +5,7 @@ import MapView from 'react-native-maps'
 export default function App() {
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} />
+      <MapView style={styles.map} mapType='standard' showsUserLocation='true'/>
       <StatusBar style="auto" />
     </View>
   );
